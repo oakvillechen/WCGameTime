@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>WCGameTime - World Cup 2026</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Outfit:wght@700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="" />
+  </head>
+  <body>
+    <div id="app">
+      <header>
+        <div class="logo">
+          <h1>WC<span>GameTime</span></h1>
+          <div class="subtitle">FIFA World Cup 2026™ Companion</div>
+        </div>
+        <nav>
+          <button class="tab-btn active" data-target="tab-today">Today's Games</button>
+          <button class="tab-btn" data-target="tab-schedule">Schedule & Groups</button>
+          <button class="tab-btn" data-target="tab-teams">Teams & Standings</button>
+        </nav>
+      </header>
+
+      <main>
+        <div id="tab-today" class="tab-content active">
+          <!-- Rendered by today.js -->
+        </div>
+
+        <div id="tab-schedule" class="tab-content">
+          <!-- Rendered by schedule.js -->
+        </div>
+
+        <div id="tab-teams" class="tab-content">
+          <!-- Rendered by teamsTable.js -->
+        </div>
+      </main>
+    </div>
+
+    <!-- Team Modal -->
+    <div id="team-modal" class="modal hidden">
+      <div class="modal-content glass-panel">
+        <button class="close-btn">&times;</button>
+        <div id="modal-body"></div>
+      </div>
+    </div>
+
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>

@@ -1,0 +1,244 @@
+/**
+ * Live data fetcher from worldcup26.ir API
+ * Provides accurate match results, schedules, and standings.
+ */
+
+const API_BASE = 'https://worldcup26.ir';
+
+// Cache for API responses
+let cachedGames = null;
+let cachedStadiums = null;
+let cachedTeams = null;
+let lastFetch = 0;
+const CACHE_TTL = 60_000; // 1 minute cache
+
+// Stadium ID -> timezone mapping for converting local_date to UTC
+const STADIUM_TIMEZONES = {
+  '1':  'America/Mexico_City',    // Estadio Azteca
+  '2':  'America/Mexico_City',    // Estadio Akron, Guadalajara
+  '3':  'America/Mexico_City',    // Estadio BBVA, Monterrey
+  '4':  'America/Chicago',        // AT&T Stadium, Dallas
+  '5':  'America/Chicago',        // NRG Stadium, Houston
+  '6':  'America/Chicago',        // GEHA Field, Kansas City
+  '7':  'America/New_York',       // Mercedes-Benz Stadium, Atlanta
+  '8':  'America/New_York',       // Hard Rock Stadium, Miami
+  '9':  'America/New_York',       // Gillette Stadium, Boston
+  '10': 'America/New_York',       // Lincoln Financial Field, Philadelphia
+  '11': 'America/New_York',       // MetLife Stadium, New York/NJ
+  '12': 'America/Toronto',        // BMO Field, Toronto
+  '13': 'America/Vancouver',      // BC Place, Vancouver
+  '14': 'America/Los_Angeles',    // Lumen Field, Seattle
+  '15': 'America/Los_Angeles',    // Levi's Stadium, San Francisco
+  '16': 'America/Los_Angeles',    // SoFi Stadium, Los Angeles
+};
+
+// Stadium ID -> our venue key mapping
+const STADIUM_TO_VENUE = {
+  '1':  'mexico_city',
+  '2':  'guadalajara',
+  '3':  'monterrey',
+  '4':  'dallas',
+  '5':  'houston',
+  '6':  'kansas_city',
+  '7':  'atlanta',
+  '8':  'miami',
+  '9':  'boston',
+  '10': 'philadelphia',
+  '11': 'new_york',
+  '12': 'toronto',
+  '13': 'vancouver',
+  '14': 'seattle',
+  '15': 'san_francisco',
+  '16': 'los_angeles',
+};
+
+/**
+ * Parse the API's local_date (venue local time) into a proper UTC ISO string.
+ * local_date format: "MM/DD/YYYY HH:mm"
+ */
+function parseLocalDateToUTC(localDateStr, stadiumId) {
+  // Parse "06/11/2026 13:00"
+  const [datePart, timePart] = localDateStr.split(' ');
+  const [month, day, year] = datePart.split('/');
+  const [hour, minute] = timePart.split(':');
+
+  // Build a date string that we can interpret in the venue's timezone
+  // Using Intl to reverse-engineer UTC from local time
+  const tz = STADIUM_TIMEZONES[stadiumId] || 'America/New_York';
+
+  // Create a date object — we need to figure out UTC from local venue time
+  // Strategy: create a rough UTC guess, then adjust
+  const roughDate = new Date(`${year}-${month}-${day}T${hour}:${minute}:00Z`);
+
+  // Get the offset for this timezone at this rough date
+  const formatter = new Intl.DateTimeFormat('en-US', {
+    timeZone: tz,
+    year: 'numeric', month: '2-digit', day: '2-digit',
+    hour: '2-digit', minute: '2-digit', second: '2-digit',
+    hour12: false,
+  });
+
+  // The offset between UTC and local time
+  // We'll use a trick: format the rough UTC date in the target timezone,
+  // then compute the difference
+  const parts = formatter.formatToParts(roughDate);
+  const localAtRough = {};
+  parts.forEach(p => { localAtRough[p.type] = p.value; });
+
+  const localHourAtRough = parseInt(localAtRough.hour === '24' ? '0' : localAtRough.hour);
+  const localDayAtRough = parseInt(localAtRough.day);
+
+  // Compute offset in hours (simplified — good enough for whole/half hour offsets)
+  let offsetHours = localHourAtRough - roughDate.getUTCHours();
+  if (localDayAtRough > roughDate.getUTCDate()) offsetHours += 24;
+  if (localDayAtRough < roughDate.getUTCDate()) offsetHours -= 24;
+
+  // The actual UTC time = local time - offset
+  const utcMs = roughDate.getTime() - (offsetHours * 3600000);
+  // Also account for minutes offset (e.g. India +5:30, Iran +3:30)
+  const localMinAtRough = parseInt(localAtRough.minute);
+  const minuteOffset = localMinAtRough - roughDate.getUTCMinutes();
+  const finalUtcMs = utcMs - (minuteOffset * 60000);
+
+  return new Date(finalUtcMs).toISOString();
+}
+
+/**
+ * Convert an API game object to our local match format
+ */
+function apiGameToMatch(game) {
+  const isFinished = game.finished === 'TRUE';
+  const isLive = game.time_elapsed && game.time_elapsed !== 'notstarted' && game.time_elapsed !== 'finished';
+
+  // Find FIFA codes from team names
+  const homeFifa = game.home_team_fifa_code || findFifaCode(game.home_team_id);
+  const awayFifa = game.away_team_fifa_code || findFifaCode(game.away_team_id);
+
+  const utcDate = parseLocalDateToUTC(game.local_date, game.stadium_id);
+
+  const match = {
+    id: parseInt(game.id),
+    date: utcDate,
+    group: game.group,
+    home: homeFifa,
+    away: awayFifa,
+    venue: STADIUM_TO_VENUE[game.stadium_id] || 'unknown',
+    stage: game.type === 'group' ? 'Group Stage' : game.type,
+    matchday: parseInt(game.matchday),
+    score: null,
+    status: game.time_elapsed, // 'notstarted', 'finished', or live minute like "45'"
+    homeScorers: game.home_scorers !== 'null' ? game.home_scorers : null,
+    awayScorers: game.away_scorers !== 'null' ? game.away_scorers : null,
+  };
+
+  if (isFinished) {
+    match.score = {
+      home: parseInt(game.home_score),
+      away: parseInt(game.away_score),
+    };
+    match.status = 'finished';
+  } else if (isLive) {
+    match.score = {
+      home: parseInt(game.home_score),
+      away: parseInt(game.away_score),
+    };
+    match.status = 'live';
+    match.liveMinute = game.time_elapsed;
+  } else {
+    match.status = 'upcoming';
+  }
+
+  return match;
+}
+
+// Team ID -> FIFA code mapping (populated from API)
+let teamIdToFifa = {};
+
+function findFifaCode(teamId) {
+  return teamIdToFifa[teamId] || 'UNK';
+}
+
+/**
+ * Fetch all data from the API
+ */
+async function fetchFromAPI() {
+  const now = Date.now();
+  if (cachedGames && (now - lastFetch) < CACHE_TTL) {
+    return { games: cachedGames, stadiums: cachedStadiums };
+  }
+
+  try {
+    const [gamesRes, teamsRes] = await Promise.all([
+      fetch(`${API_BASE}/get/games`),
+      cachedTeams ? Promise.resolve(null) : fetch(`${API_BASE}/get/teams`),
+    ]);
+
+    if (!gamesRes.ok) throw new Error(`Games API returned ${gamesRes.status}`);
+
+    const gamesData = await gamesRes.json();
+
+    if (teamsRes) {
+      const teamsData = await teamsRes.json();
+      cachedTeams = teamsData.teams;
+      // Build the ID->FIFA code map
+      teamIdToFifa = {};
+      cachedTeams.forEach(t => {
+        teamIdToFifa[t.id] = t.fifa_code;
+      });
+    }
+
+    cachedGames = gamesData.games;
+    lastFetch = now;
+
+    return { games: cachedGames };
+  } catch (err) {
+    console.error('Failed to fetch from worldcup26.ir:', err);
+    return { games: cachedGames || [], error: err.message };
+  }
+}
+
+/**
+ * Get all matches in our app's format, fetched live from the API
+ */
+export async function fetchMatches() {
+  const { games, error } = await fetchFromAPI();
+
+  if (!games || games.length === 0) {
+    return { matches: [], error: error || 'No data' };
+  }
+
+  const matches = games.map(apiGameToMatch);
+  // Sort by date, then by ID
+  matches.sort((a, b) => new Date(a.date) - new Date(b.date) || a.id - b.id);
+
+  return { matches, error: null };
+}
+
+/**
+ * Get matches for a specific date (Toronto timezone)
+ */
+export async function fetchTodayMatches() {
+  const { matches, error } = await fetchMatches();
+  if (error) return { matches: [], error };
+
+  const todayFormat = new Intl.DateTimeFormat('en-US', {
+    year: 'numeric', month: '2-digit', day: '2-digit',
+    timeZone: 'America/Toronto',
+  });
+
+  const todayStr = todayFormat.format(new Date());
+
+  const todaysMatches = matches.filter(match => {
+    const matchDateStr = todayFormat.format(new Date(match.date));
+    return matchDateStr === todayStr || match.status === 'live';
+  });
+
+  return { matches: todaysMatches, error: null };
+}
+
+/**
+ * Force refresh the cache
+ */
+export function invalidateCache() {
+  lastFetch = 0;
+}
