@@ -17,8 +17,10 @@ L.Icon.Default.mergeOptions({
 export function renderTodayTab() {
   const container = document.getElementById('tab-today');
 
-  // Show loading state
-  container.innerHTML = `<div class="glass-panel" style="padding: 2rem; text-align: center;"><h3>⏳ Loading today's matches...</h3></div>`;
+  // Show loading state only if there are no matches already rendered
+  if (!container.querySelector('.match-card')) {
+    container.innerHTML = `<div class="glass-panel" style="padding: 2rem; text-align: center;"><h3>⏳ Loading today's matches...</h3></div>`;
+  }
 
   // Fetch and render
   renderMatchesAsync(container);

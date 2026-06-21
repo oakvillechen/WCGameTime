@@ -3,6 +3,8 @@
  * Provides accurate match results, schedules, and standings.
  */
 
+import { matches as staticMatches } from './matches.js';
+
 const API_BASE = 'https://worldcup26.ir';
 
 // Cache for API responses
@@ -11,6 +13,26 @@ let cachedStadiums = null;
 let cachedTeams = null;
 let lastFetch = 0;
 const CACHE_TTL = 60_000; // 1 minute cache
+
+let cachedMatches = null;
+let isFetchingInBackground = false;
+
+async function fetchWithTimeout(resource, options = {}) {
+  const { timeout = 2000 } = options;
+  const controller = new AbortController();
+  const id = setTimeout(() => controller.abort(), timeout);
+  try {
+    const response = await fetch(resource, {
+      ...options,
+      signal: controller.signal
+    });
+    clearTimeout(id);
+    return response;
+  } catch (error) {
+    clearTimeout(id);
+    throw error;
+  }
+}
 
 // Stadium ID -> timezone mapping for converting local_date to UTC
 const STADIUM_TIMEZONES = {
@@ -164,13 +186,13 @@ function findFifaCode(teamId) {
 async function fetchFromAPI() {
   const now = Date.now();
   if (cachedGames && (now - lastFetch) < CACHE_TTL) {
-    return { games: cachedGames, stadiums: cachedStadiums };
+    return { games: cachedGames };
   }
 
   try {
     const [gamesRes, teamsRes] = await Promise.all([
-      fetch(`${API_BASE}/get/games`),
-      cachedTeams ? Promise.resolve(null) : fetch(`${API_BASE}/get/teams`),
+      fetchWithTimeout(`${API_BASE}/get/games`, { timeout: 2000 }),
+      cachedTeams ? Promise.resolve(null) : fetchWithTimeout(`${API_BASE}/get/teams`, { timeout: 2000 }),
     ]);
 
     if (!gamesRes.ok) throw new Error(`Games API returned ${gamesRes.status}`);
@@ -193,7 +215,24 @@ async function fetchFromAPI() {
     return { games: cachedGames };
   } catch (err) {
     console.error('Failed to fetch from worldcup26.ir:', err);
-    return { games: cachedGames || [], error: err.message };
+    // Throttle retries: set lastFetch so we wait at least 30s before retrying
+    lastFetch = Date.now() - CACHE_TTL + 30000;
+    return { games: null, error: err.message };
+  }
+}
+
+async function triggerBackgroundFetch() {
+  try {
+    const { games, error } = await fetchFromAPI();
+    if (games && games.length > 0) {
+      const liveMatches = games.map(apiGameToMatch);
+      // Sort by date, then by ID
+      liveMatches.sort((a, b) => new Date(a.date) - new Date(b.date) || a.id - b.id);
+      cachedMatches = liveMatches;
+      window.dispatchEvent(new CustomEvent('wc-data-updated'));
+    }
+  } catch (err) {
+    console.warn('Background fetch error:', err);
   }
 }
 
@@ -201,17 +240,20 @@ async function fetchFromAPI() {
  * Get all matches in our app's format, fetched live from the API
  */
 export async function fetchMatches() {
-  const { games, error } = await fetchFromAPI();
+  const now = Date.now();
 
-  if (!games || games.length === 0) {
-    return { matches: [], error: error || 'No data' };
+  if (!cachedMatches) {
+    cachedMatches = [...staticMatches];
   }
 
-  const matches = games.map(apiGameToMatch);
-  // Sort by date, then by ID
-  matches.sort((a, b) => new Date(a.date) - new Date(b.date) || a.id - b.id);
+  if ((now - lastFetch) > CACHE_TTL && !isFetchingInBackground) {
+    isFetchingInBackground = true;
+    triggerBackgroundFetch().finally(() => {
+      isFetchingInBackground = false;
+    });
+  }
 
-  return { matches, error: null };
+  return { matches: cachedMatches, error: null };
 }
 
 /**

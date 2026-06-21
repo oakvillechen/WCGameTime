@@ -4,7 +4,10 @@ import { openTeamModal } from '../components/teamModal.js';
 
 export function renderTeamsTab() {
   const container = document.getElementById('tab-teams');
-  container.innerHTML = `<div class="glass-panel" style="padding: 2rem; text-align: center;"><h3>⏳ Loading standings...</h3></div>`;
+  // Show loading state only if no table is already rendered
+  if (!container.querySelector('.teams-table')) {
+    container.innerHTML = `<div class="glass-panel" style="padding: 2rem; text-align: center;"><h3>⏳ Loading standings...</h3></div>`;
+  }
   renderTeamsAsync(container);
 }
 

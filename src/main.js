@@ -59,4 +59,15 @@ document.addEventListener('DOMContentLoaded', () => {
       modal.classList.remove('active');
     }
   });
+
+  // Listen for background data updates and re-render current tab
+  window.addEventListener('wc-data-updated', () => {
+    const activeBtn = document.querySelector('.tab-btn.active');
+    if (activeBtn) {
+      const targetId = activeBtn.dataset.target;
+      if (targetId === 'tab-today') renderTodayTab();
+      if (targetId === 'tab-schedule') renderScheduleTab();
+      if (targetId === 'tab-teams') renderTeamsTab();
+    }
+  });
 });
