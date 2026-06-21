@@ -18,7 +18,7 @@ let cachedMatches = null;
 let isFetchingInBackground = false;
 
 async function fetchWithTimeout(resource, options = {}) {
-  const { timeout = 2000 } = options;
+  const { timeout = 15000 } = options;
   const controller = new AbortController();
   const id = setTimeout(() => controller.abort(), timeout);
   try {
@@ -136,36 +136,49 @@ function apiGameToMatch(game) {
   const homeFifa = game.home_team_fifa_code || findFifaCode(game.home_team_id);
   const awayFifa = game.away_team_fifa_code || findFifaCode(game.away_team_id);
 
+  // Look up local match ID and metadata from staticMatches by comparing home & away teams
+  const localMatch = staticMatches.find(m => 
+    (m.home === homeFifa && m.away === awayFifa) || 
+    (m.home === awayFifa && m.away === homeFifa)
+  );
+
+  const matchId = localMatch ? localMatch.id : parseInt(game.id);
+  const group = localMatch ? localMatch.group : game.group;
+  const stage = localMatch ? localMatch.stage : (game.type === 'group' ? 'Group Stage' : game.type);
+  
+  // Decide actual home/away based on localMatch order if available
+  const actualHome = localMatch ? localMatch.home : homeFifa;
+  const actualAway = localMatch ? localMatch.away : awayFifa;
+  const isSwapped = localMatch && (localMatch.home === awayFifa);
+
   const utcDate = parseLocalDateToUTC(game.local_date, game.stadium_id);
 
   const match = {
-    id: parseInt(game.id),
+    id: matchId,
     date: utcDate,
-    group: game.group,
-    home: homeFifa,
-    away: awayFifa,
+    group: group,
+    home: actualHome,
+    away: actualAway,
     venue: STADIUM_TO_VENUE[game.stadium_id] || 'unknown',
-    stage: game.type === 'group' ? 'Group Stage' : game.type,
+    stage: stage,
     matchday: parseInt(game.matchday),
     score: null,
-    status: game.time_elapsed, // 'notstarted', 'finished', or live minute like "45'"
-    homeScorers: game.home_scorers !== 'null' ? game.home_scorers : null,
-    awayScorers: game.away_scorers !== 'null' ? game.away_scorers : null,
+    status: game.time_elapsed,
+    homeScorers: isSwapped ? (game.away_scorers !== 'null' ? game.away_scorers : null) : (game.home_scorers !== 'null' ? game.home_scorers : null),
+    awayScorers: isSwapped ? (game.home_scorers !== 'null' ? game.home_scorers : null) : (game.away_scorers !== 'null' ? game.away_scorers : null),
   };
 
-  if (isFinished) {
+  if (isFinished || isLive) {
+    const rawHomeScore = parseInt(game.home_score);
+    const rawAwayScore = parseInt(game.away_score);
     match.score = {
-      home: parseInt(game.home_score),
-      away: parseInt(game.away_score),
+      home: isSwapped ? rawAwayScore : rawHomeScore,
+      away: isSwapped ? rawHomeScore : rawAwayScore,
     };
-    match.status = 'finished';
-  } else if (isLive) {
-    match.score = {
-      home: parseInt(game.home_score),
-      away: parseInt(game.away_score),
-    };
-    match.status = 'live';
-    match.liveMinute = game.time_elapsed;
+    match.status = isFinished ? 'finished' : 'live';
+    if (isLive) {
+      match.liveMinute = game.time_elapsed;
+    }
   } else {
     match.status = 'upcoming';
   }
@@ -191,8 +204,8 @@ async function fetchFromAPI() {
 
   try {
     const [gamesRes, teamsRes] = await Promise.all([
-      fetchWithTimeout(`${API_BASE}/get/games`, { timeout: 2000 }),
-      cachedTeams ? Promise.resolve(null) : fetchWithTimeout(`${API_BASE}/get/teams`, { timeout: 2000 }),
+      fetchWithTimeout(`${API_BASE}/get/games`, { timeout: 15000 }),
+      cachedTeams ? Promise.resolve(null) : fetchWithTimeout(`${API_BASE}/get/teams`, { timeout: 15000 }),
     ]);
 
     if (!gamesRes.ok) throw new Error(`Games API returned ${gamesRes.status}`);
