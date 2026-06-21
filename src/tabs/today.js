@@ -172,6 +172,10 @@ async function renderMatchesAsync(container) {
           </p>
           
           <div id="map-${match.id}" class="map-container"></div>
+          <button class="open-map-btn" data-match-id="${match.id}" data-venue-key="${match.venue}"
+            style="display: inline-flex; align-items: center; gap: 0.4rem; margin-top: 0.75rem; padding: 0.5rem 1rem; background: rgba(255,255,255,0.08); border: 1px solid var(--glass-border); color: var(--text-primary); border-radius: 8px; cursor: pointer; font-family: var(--font-main); font-size: 0.85rem; font-weight: 600; transition: all 0.2s ease;">
+            🗺️ Open Map in New Window
+          </button>
         </div>
         ` : ''}
       </div>
@@ -213,5 +217,71 @@ async function renderMatchesAsync(container) {
         openTeamModal(teamId);
       });
     });
+
+    // Add click listeners to open-map buttons
+    container.querySelectorAll('.open-map-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const venueKey = btn.dataset.venueKey;
+        const venue = venues[venueKey];
+        if (!venue) return;
+        openMapWindow(venue);
+      });
+    });
   }, 100);
+}
+
+function openMapWindow(venue) {
+  const html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${venue.name} - ${venue.city}</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="" />
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: system-ui, sans-serif; background: #f5f5f5; color: #333; }
+    #map { width: 100vw; height: calc(100vh - 56px); }
+    .map-header {
+      height: 56px; display: flex; align-items: center;
+      padding: 0 1.5rem; background: #fff;
+      border-bottom: 1px solid #e2e8f0;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+    }
+    .map-header h2 { font-size: 1rem; font-weight: 700; color: #1a202c; }
+    .map-header h2 span { color: #b7791f; font-weight: 400; }
+    .map-header p { font-size: 0.8rem; color: #718096; margin-top: 2px; }
+  </style>
+</head>
+<body>
+  <div class="map-header">
+    <div>
+      <h2>🏟️ ${venue.name} <span>· ${venue.realName || ''}</span></h2>
+      <p>${venue.city}, ${venue.country}</p>
+    </div>
+  </div>
+  <div id="map"></div>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""><\/script>
+  <script>
+    const map = L.map('map').setView([${venue.lat}, ${venue.lng}], 15);
+    const streets = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a>',
+      subdomains: 'abcd', maxZoom: 20
+    });
+    const satellite = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+      attribution: '&copy; Esri', maxZoom: 19
+    });
+    streets.addTo(map);
+    L.control.layers({ 'Street': streets, 'Satellite': satellite }).addTo(map);
+    L.marker([${venue.lat}, ${venue.lng}])
+      .addTo(map)
+      .bindPopup('<b>${venue.name.replace(/'/g, "\\'")}</b><br>${venue.city}, ${venue.country}')
+      .openPopup();
+  <\/script>
+</body>
+</html>`;
+
+  const blob = new Blob([html], { type: 'text/html' });
+  const url = URL.createObjectURL(blob);
+  window.open(url, '_blank', 'width=1000,height=700');
 }
