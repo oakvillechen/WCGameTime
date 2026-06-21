@@ -73,12 +73,41 @@ async function renderScheduleList() {
     groupedMatches[dateStr].push(match);
   });
   
+  const todayStr = dateFormatter.format(new Date());
+  const now = new Date();
+
+  let targetDateKey = null;
+
+  // Try to find today's date group
+  for (const date of Object.keys(groupedMatches)) {
+    if (date === todayStr) {
+      targetDateKey = date;
+      break;
+    }
+  }
+
+  // If today has no matches, find the first date group that has upcoming matches
+  if (!targetDateKey) {
+    for (const date of Object.keys(groupedMatches)) {
+      const matchDate = new Date(groupedMatches[date][0].date);
+      if (matchDate >= now) {
+        targetDateKey = date;
+        break;
+      }
+    }
+  }
+
   let html = '';
   
   Object.keys(groupedMatches).forEach(date => {
+    const isToday = date === todayStr;
+    const isTarget = date === targetDateKey;
     html += `
-      <div class="date-group glass-panel" style="padding: 1.5rem;">
-        <h3 class="date-header">${date}</h3>
+      <div class="date-group glass-panel" style="padding: 1.5rem; ${isToday ? 'border: 2px solid var(--accent-gold);' : ''}" ${isTarget ? 'id="scroll-target"' : ''}>
+        <h3 class="date-header">
+          ${date}
+          ${isToday ? '<span class="today-badge" style="background: var(--accent-gold); color: var(--bg-color); font-size: 0.8rem; padding: 0.2rem 0.5rem; border-radius: 4px; margin-left: 0.5rem; vertical-align: middle;">Today</span>' : ''}
+        </h3>
     `;
     
     groupedMatches[date].forEach(match => {
@@ -133,6 +162,14 @@ async function renderScheduleList() {
       openTeamModal(el.dataset.team);
     });
   });
+
+  // Scroll down to today's games or the next upcoming games
+  setTimeout(() => {
+    const targetEl = document.getElementById('scroll-target');
+    if (targetEl) {
+      targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }, 150);
 }
 
 async function renderGroupsList() {
