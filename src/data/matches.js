@@ -351,11 +351,11 @@ export const matches = [
   },
   {
     "id": 36,
-    "date": "2026-06-17T22:00:00.000Z",
+    "date": "2026-06-21T04:00:00.000Z",
     "group": "F",
-    "home": "JPN",
-    "away": "TUN",
-    "venue": "boston",
+    "home": "TUN",
+    "away": "JPN",
+    "venue": "monterrey",
     "stage": "Group Stage",
     "score": null
   },
