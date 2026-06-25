@@ -351,6 +351,7 @@ main {
 
 .date-group {
   margin-bottom: 2rem;
+  scroll-margin-top: 150px; /* Offset for sticky header on desktop */
 }
 
 .date-header {
@@ -666,6 +667,10 @@ main {
 
   .date-header {
     font-size: 1.1rem;
+  }
+
+  .date-group {
+    scroll-margin-top: 92px; /* Offset for sticky header on mobile */
   }
 
   /* Groups grid */
