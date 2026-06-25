@@ -12,7 +12,8 @@ export const venues = {
     lng: -99.1505,
     capacity: 80824,
     timezone: "America/Mexico_City",
-    description: "Mexico City, the vibrant capital of Mexico, is one of the largest cities in the world with a metropolitan population of over 21 million. Known for its rich Aztec heritage, world-class museums like the National Museum of Anthropology, and incredible street food culture. The Estadio Azteca is the only stadium to have hosted two FIFA World Cup finals (1970, 1986)."
+    description: "Mexico City, the vibrant capital of Mexico, is one of the largest cities in the world with a metropolitan population of over 21 million. Known for its rich Aztec heritage, world-class museums like the National Museum of Anthropology, and incredible street food culture. The Estadio Azteca is the only stadium to have hosted two FIFA World Cup finals (1970, 1986).",
+    description_zh: "墨西哥城是墨西哥充满活力的首都，也是世界上最大的城市之一，都会区人口超过2100万。这里以丰富的阿兹特克文化遗产、国家人类学博物馆等世界级博物馆和令人难以置信的街头美食文化而闻名。阿兹特克体育场是唯一一座举办过两届FIFA世界杯决赛（1970年、1986年）的体育场。"
   },
   guadalajara: {
     id: "guadalajara",
@@ -26,7 +27,8 @@ export const venues = {
     lng: -103.4625,
     capacity: 45664,
     timezone: "America/Mexico_City",
-    description: "Guadalajara is Mexico's second-largest city and the birthplace of mariachi music and tequila. The 'Pearl of the West' is famous for its colonial architecture, the stunning Hospicio Cabañas (a UNESCO World Heritage Site), and its passionate football culture as home to both Chivas and Atlas."
+    description: "Guadalajara is Mexico's second-largest city and the birthplace of mariachi music and tequila. The 'Pearl of the West' is famous for its colonial architecture, the stunning Hospicio Cabañas (a UNESCO World Heritage Site), and its passionate football culture as home to both Chivas and Atlas.",
+    description_zh: "瓜达拉哈拉是墨西哥第二大城市，也是马里亚奇音乐和龙舌兰酒的发源地。这座\"西部明珠\"以其殖民地建筑、令人惊叹的卡巴尼亚斯救济院（联合国教科文组织世界遗产）以及作为瓜达拉哈拉芝华士和阿特拉斯两支球队主场的热情足球文化而闻名。"
   },
   monterrey: {
     id: "monterrey",
@@ -40,7 +42,8 @@ export const venues = {
     lng: -100.0094,
     capacity: 51243,
     timezone: "America/Monterrey",
-    description: "Monterrey, nestled at the foot of the Sierra Madre Oriental mountains, is Mexico's industrial powerhouse and third-largest city. Known for its dramatic mountain scenery, including the iconic Cerro de la Silla, world-class universities, and a thriving business culture that blends Mexican tradition with modern innovation."
+    description: "Monterrey, nestled at the foot of the Sierra Madre Oriental mountains, is Mexico's industrial powerhouse and third-largest city. Known for its dramatic mountain scenery, including the iconic Cerro de la Silla, world-class universities, and a thriving business culture that blends Mexican tradition with modern innovation.",
+    description_zh: "蒙特雷坐落在东马德雷山脉脚下，是墨西哥的工业重镇和第三大城市。这里以壮观的山景（包括标志性的马鞍山）、世界一流的大学以及融合墨西哥传统与现代创新的繁荣商业文化而闻名。"
   },
   toronto: {
     id: "toronto",
@@ -54,7 +57,8 @@ export const venues = {
     lng: -79.4186,
     capacity: 43036,
     timezone: "America/Toronto",
-    description: "Toronto is Canada's largest city and one of the most multicultural cities in the world, with over half its population born outside Canada. Home to the iconic CN Tower, a vibrant arts scene, and diverse neighborhoods like Kensington Market and Distillery District. The city sits on the northwestern shore of Lake Ontario."
+    description: "Toronto is Canada's largest city and one of the most multicultural cities in the world, with over half its population born outside Canada. Home to the iconic CN Tower, a vibrant arts scene, and diverse neighborhoods like Kensington Market and Distillery District. The city sits on the northwestern shore of Lake Ontario.",
+    description_zh: "多伦多是加拿大最大的城市，也是世界上最多元文化的城市之一，超过一半的人口出生在加拿大以外。这里拥有标志性的加拿大国家电视塔、充满活力的艺术氛围，以及肯辛顿市场和酿酒厂区等多样化社区。城市坐落在安大略湖西北岸。"
   },
   vancouver: {
     id: "vancouver",
@@ -68,7 +72,8 @@ export const venues = {
     lng: -123.1120,
     capacity: 52497,
     timezone: "America/Vancouver",
-    description: "Vancouver is consistently ranked among the world's most livable cities, set between the Pacific Ocean and the Coast Mountains. Known for its stunning natural beauty, thriving film industry (often called 'Hollywood North'), diverse Asian-influenced food scene, and outdoor recreation from skiing to sailing."
+    description: "Vancouver is consistently ranked among the world's most livable cities, set between the Pacific Ocean and the Coast Mountains. Known for its stunning natural beauty, thriving film industry (often called 'Hollywood North'), diverse Asian-influenced food scene, and outdoor recreation from skiing to sailing.",
+    description_zh: "温哥华一直被评为世界上最宜居的城市之一，坐落在太平洋和海岸山脉之间。这里以令人惊叹的自然美景、蓬勃发展的电影产业（常被称为\"北方好莱坞\"）、丰富的亚洲风味美食以及从滑雪到帆船的户外活动而闻名。"
   },
   new_york: {
     id: "new_york",
@@ -82,7 +87,8 @@ export const venues = {
     lng: -74.0745,
     capacity: 80663,
     timezone: "America/New_York",
-    description: "The New York metropolitan area is the most populous urban region in the United States, a global hub for finance, culture, and entertainment. MetLife Stadium sits just across the Hudson River from Manhattan, near the iconic NYC skyline. The stadium will host the 2026 World Cup Final on July 19."
+    description: "The New York metropolitan area is the most populous urban region in the United States, a global hub for finance, culture, and entertainment. MetLife Stadium sits just across the Hudson River from Manhattan, near the iconic NYC skyline. The stadium will host the 2026 World Cup Final on July 19.",
+    description_zh: "纽约大都会区是美国人口最多的城市区域，是全球金融、文化和娱乐中心。大都会人寿体育场位于哈德逊河对岸，毗邻标志性的纽约天际线。该体育场将于7月19日举办2026年世界杯决赛。"
   },
   los_angeles: {
     id: "los_angeles",
@@ -96,7 +102,8 @@ export const venues = {
     lng: -118.3392,
     capacity: 70492,
     timezone: "America/Los_Angeles",
-    description: "Los Angeles, the entertainment capital of the world, is home to Hollywood, world-famous beaches, and a diverse population of nearly 4 million. SoFi Stadium, opened in 2020, is one of the most technologically advanced venues in the world, featuring a massive double-sided video board and open-air design."
+    description: "Los Angeles, the entertainment capital of the world, is home to Hollywood, world-famous beaches, and a diverse population of nearly 4 million. SoFi Stadium, opened in 2020, is one of the most technologically advanced venues in the world, featuring a massive double-sided video board and open-air design.",
+    description_zh: "洛杉矶是世界娱乐之都，拥有好莱坞、世界闻名的海滩和近400万多元化人口。SoFi体育场于2020年开放，是世界上技术最先进的场馆之一，配备了巨大的双面视频屏和露天设计。"
   },
   dallas: {
     id: "dallas",
@@ -110,7 +117,8 @@ export const venues = {
     lng: -97.0945,
     capacity: 70649,
     timezone: "America/Chicago",
-    description: "The Dallas-Fort Worth metroplex is the fourth-largest metro area in the US, known for its booming economy, cowboy culture, and world-class BBQ. AT&T Stadium features the world's largest column-free interior and a massive retractable roof, making it one of the most impressive sporting venues globally."
+    description: "The Dallas-Fort Worth metroplex is the fourth-largest metro area in the US, known for its booming economy, cowboy culture, and world-class BBQ. AT&T Stadium features the world's largest column-free interior and a massive retractable roof, making it one of the most impressive sporting venues globally.",
+    description_zh: "达拉斯-沃斯堡都会区是美国第四大都市区，以蓬勃的经济、牛仔文化和世界级烧烤而闻名。AT&T体育场拥有世界上最大的无柱内部空间和巨大的可伸缩屋顶，是全球最令人印象深刻的体育场馆之一。"
   },
   atlanta: {
     id: "atlanta",
@@ -124,7 +132,8 @@ export const venues = {
     lng: -84.4006,
     capacity: 68239,
     timezone: "America/New_York",
-    description: "Atlanta, the capital of Georgia, is a major cultural and economic center of the American South. Known as the birthplace of Martin Luther King Jr. and Coca-Cola, the city has a rich civil rights history. Mercedes-Benz Stadium features a stunning pinwheel-style retractable roof and is home to Atlanta United FC."
+    description: "Atlanta, the capital of Georgia, is a major cultural and economic center of the American South. Known as the birthplace of Martin Luther King Jr. and Coca-Cola, the city has a rich civil rights history. Mercedes-Benz Stadium features a stunning pinwheel-style retractable roof and is home to Atlanta United FC.",
+    description_zh: "亚特兰大是佐治亚州首府，也是美国南部重要的文化和经济中心。这里是马丁·路德·金博士和可口可乐的诞生地，拥有丰富的民权运动历史。梅赛德斯-奔驰体育场拥有令人惊叹的风车式可伸缩屋顶，是亚特兰大联队的主场。"
   },
   houston: {
     id: "houston",
@@ -138,7 +147,8 @@ export const venues = {
     lng: -95.4107,
     capacity: 68777,
     timezone: "America/Chicago",
-    description: "Houston is the fourth-largest city in the US and home to NASA's Johnson Space Center, the Texas Medical Center (the world's largest), and a remarkably diverse food scene. The city's energy industry drives its economy, while its cultural institutions like the Museum District rival any in the country."
+    description: "Houston is the fourth-largest city in the US and home to NASA's Johnson Space Center, the Texas Medical Center (the world's largest), and a remarkably diverse food scene. The city's energy industry drives its economy, while its cultural institutions like the Museum District rival any in the country.",
+    description_zh: "休斯顿是美国第四大城市，拥有NASA约翰逊航天中心、德克萨斯医学中心（世界最大）以及极其丰富多样的美食文化。这座城市的能源产业推动着经济发展，而博物馆区等文化机构可与全国任何城市媲美。"
   },
   philadelphia: {
     id: "philadelphia",
@@ -152,7 +162,8 @@ export const venues = {
     lng: -75.1675,
     capacity: 68324,
     timezone: "America/New_York",
-    description: "Philadelphia, the birthplace of American democracy, is where the Declaration of Independence and Constitution were signed. The 'City of Brotherly Love' is known for its rich history, world-class art museums, passionate sports fans, and iconic foods like cheesesteaks and soft pretzels."
+    description: "Philadelphia, the birthplace of American democracy, is where the Declaration of Independence and Constitution were signed. The 'City of Brotherly Love' is known for its rich history, world-class art museums, passionate sports fans, and iconic foods like cheesesteaks and soft pretzels.",
+    description_zh: "费城是美国民主的发源地，《独立宣言》和《宪法》在此签署。这座\"兄弟之爱之城\"以其丰富的历史、世界级艺术博物馆、热情的体育迷以及芝士牛排和软椒盐卷饼等标志性美食而闻名。"
   },
   miami: {
     id: "miami",
@@ -166,7 +177,8 @@ export const venues = {
     lng: -80.2389,
     capacity: 64478,
     timezone: "America/New_York",
-    description: "Miami is a vibrant, tropical metropolis known for its stunning beaches, Art Deco architecture in South Beach, and strong Latin American cultural influence. The city serves as a gateway between North and South America, with a diverse population and a nightlife scene that rivals any in the world."
+    description: "Miami is a vibrant, tropical metropolis known for its stunning beaches, Art Deco architecture in South Beach, and strong Latin American cultural influence. The city serves as a gateway between North and South America, with a diverse population and a nightlife scene that rivals any in the world.",
+    description_zh: "迈阿密是一座充满活力的热带大都市，以其迷人的海滩、南海滩的装饰艺术建筑以及浓厚的拉丁美洲文化影响而闻名。这座城市是南北美洲之间的门户，拥有多元化的人口和可与世界上任何城市媲美的夜生活。"
   },
   seattle: {
     id: "seattle",
@@ -180,7 +192,8 @@ export const venues = {
     lng: -122.3316,
     capacity: 66925,
     timezone: "America/Los_Angeles",
-    description: "Seattle, the Emerald City, is nestled between Puget Sound and the Cascade Mountains. Home to tech giants like Amazon and Microsoft, the city is known for its coffee culture (birthplace of Starbucks), grunge music heritage, Pike Place Market, and the iconic Space Needle."
+    description: "Seattle, the Emerald City, is nestled between Puget Sound and the Cascade Mountains. Home to tech giants like Amazon and Microsoft, the city is known for its coffee culture (birthplace of Starbucks), grunge music heritage, Pike Place Market, and the iconic Space Needle.",
+    description_zh: "西雅图，被称为翡翠之城，坐落在普吉特海湾和喀斯喀特山脉之间。这里是亚马逊和微软等科技巨头的所在地，以其咖啡文化（星巴克的发源地）、垃圾摇滚音乐传统、派克市场和标志性的太空针塔而闻名。"
   },
   san_francisco: {
     id: "san_francisco",
@@ -194,7 +207,8 @@ export const venues = {
     lng: -121.9695,
     capacity: 68827,
     timezone: "America/Los_Angeles",
-    description: "The San Francisco Bay Area is a global center of technology and innovation, home to Silicon Valley, Stanford University, and countless tech startups. The region is famous for the Golden Gate Bridge, Alcatraz Island, cable cars, and a world-renowned food and wine scene in nearby Napa Valley."
+    description: "The San Francisco Bay Area is a global center of technology and innovation, home to Silicon Valley, Stanford University, and countless tech startups. The region is famous for the Golden Gate Bridge, Alcatraz Island, cable cars, and a world-renowned food and wine scene in nearby Napa Valley.",
+    description_zh: "旧金山湾区是全球科技和创新中心，是硅谷、斯坦福大学和无数科技初创企业的所在地。该地区以金门大桥、恶魔岛、有轨电车以及附近纳帕谷世界闻名的美食美酒而著称。"
   },
   kansas_city: {
     id: "kansas_city",
@@ -208,7 +222,8 @@ export const venues = {
     lng: -94.4839,
     capacity: 69045,
     timezone: "America/Chicago",
-    description: "Kansas City straddles the Missouri-Kansas border and is famous for its legendary BBQ, jazz heritage, and the iconic fountains that earn it the nickname 'City of Fountains.' Arrowhead Stadium is one of the loudest outdoor stadiums in the world and home to the NFL's Kansas City Chiefs."
+    description: "Kansas City straddles the Missouri-Kansas border and is famous for its legendary BBQ, jazz heritage, and the iconic fountains that earn it the nickname 'City of Fountains.' Arrowhead Stadium is one of the loudest outdoor stadiums in the world and home to the NFL's Kansas City Chiefs.",
+    description_zh: "堪萨斯城横跨密苏里州和堪萨斯州边界，以其传奇的烧烤、爵士乐传统和标志性的喷泉而闻名，被誉为\"喷泉之城\"。箭头体育场是世界上最嘈杂的露天体育场之一，也是NFL堪萨斯城酋长队的主场。"
   },
   boston: {
     id: "boston",
@@ -222,6 +237,7 @@ export const venues = {
     lng: -71.2643,
     capacity: 64146,
     timezone: "America/New_York",
-    description: "Boston is one of America's oldest cities, rich in revolutionary history and home to prestigious universities like Harvard and MIT. Known for its charming cobblestone streets, world-class seafood, passionate sports culture, and the Freedom Trail that connects 16 historic sites."
+    description: "Boston is one of America's oldest cities, rich in revolutionary history and home to prestigious universities like Harvard and MIT. Known for its charming cobblestone streets, world-class seafood, passionate sports culture, and the Freedom Trail that connects 16 historic sites.",
+    description_zh: "波士顿是美国最古老的城市之一，拥有丰富的革命历史，是哈佛大学和麻省理工学院等名校的所在地。这里以迷人的鹅卵石街道、世界级海鲜、热情的体育文化以及连接16个历史遗迹的自由之路而闻名。"
   }
 };

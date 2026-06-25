@@ -171,7 +171,7 @@ async function renderMatchesAsync(container) {
           </div>
           
           <p style="font-size: 0.85rem; color: var(--text-secondary); margin: 0.75rem 0; line-height: 1.4;">
-            ${venue.description}
+            ${lang === 'zh' && venue.description_zh ? venue.description_zh : venue.description}
           </p>
           
           <div id="map-${match.id}" class="map-container"></div>

@@ -53,15 +53,15 @@ async function renderTeamsAsync(container) {
   }
 
   // Convert to array and sort
-  const sortedTeams = Object.values(teams).map(t => ({
-    ...t,
-    pts: (stats[t.id] || {}).pts || 0,
-    gf: (stats[t.id] || {}).gf || 0,
-    ga: (stats[t.id] || {}).ga || 0,
-    played: (stats[t.id] || {}).played || 0,
-    w: (stats[t.id] || {}).w || 0,
-    d: (stats[t.id] || {}).d || 0,
-    l: (stats[t.id] || {}).l || 0,
+  const sortedTeams = Object.values(teams).map(team => ({
+    ...team,
+    pts: (stats[team.id] || {}).pts || 0,
+    gf: (stats[team.id] || {}).gf || 0,
+    ga: (stats[team.id] || {}).ga || 0,
+    played: (stats[team.id] || {}).played || 0,
+    w: (stats[team.id] || {}).w || 0,
+    d: (stats[team.id] || {}).d || 0,
+    l: (stats[team.id] || {}).l || 0,
   })).sort((a, b) => {
     if (b.pts !== a.pts) return b.pts - a.pts;
     const gdA = a.gf - a.ga;

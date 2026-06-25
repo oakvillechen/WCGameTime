@@ -259,11 +259,19 @@ export async function fetchMatches() {
     cachedMatches = [...staticMatches];
   }
 
-  if ((now - lastFetch) > CACHE_TTL && !isFetchingInBackground) {
+  const needsFetch = (now - lastFetch) > CACHE_TTL && !isFetchingInBackground;
+
+  if (needsFetch) {
+    // On the very first fetch (no API data yet), await it so we render with real scores
+    const isFirstFetch = lastFetch === 0;
     isFetchingInBackground = true;
-    triggerBackgroundFetch().finally(() => {
+    const fetchPromise = triggerBackgroundFetch().finally(() => {
       isFetchingInBackground = false;
     });
+
+    if (isFirstFetch) {
+      await fetchPromise;
+    }
   }
 
   return { matches: cachedMatches, error: null };
