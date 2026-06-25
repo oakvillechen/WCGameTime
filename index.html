@@ -13,14 +13,18 @@
   <body>
     <div id="app">
       <header>
-        <div class="logo">
-          <h1>WorldCup<span>GameTime</span></h1>
-          <div class="subtitle">FIFA World Cup 2026™ Companion</div>
+        <div class="header-top">
+          <div class="logo">
+            <h1><span id="title-1">WorldCup</span><span id="title-2">GameTime</span></h1>
+            <div class="subtitle" id="app-subtitle">FIFA World Cup 2026™ Companion</div>
+          </div>
+          <button id="lang-toggle" class="lang-btn" title="Switch language">中文</button>
         </div>
-        <nav>
+        <nav id="desktop-nav">
           <button class="tab-btn active" data-target="tab-today">Today's Games</button>
-          <button class="tab-btn" data-target="tab-schedule">Schedule & Groups</button>
-          <button class="tab-btn" data-target="tab-teams">Teams & Standings</button>
+          <button class="tab-btn" data-target="tab-schedule">Schedule</button>
+          <button class="tab-btn" data-target="tab-groups">Groups</button>
+          <button class="tab-btn" data-target="tab-standings">Standings</button>
         </nav>
       </header>
 
@@ -33,7 +37,11 @@
           <!-- Rendered by schedule.js -->
         </div>
 
-        <div id="tab-teams" class="tab-content">
+        <div id="tab-groups" class="tab-content">
+          <!-- Rendered by schedule.js (groups) -->
+        </div>
+
+        <div id="tab-standings" class="tab-content">
           <!-- Rendered by teamsTable.js -->
         </div>
       </main>
@@ -46,6 +54,26 @@
         <div id="modal-body"></div>
       </div>
     </div>
+
+    <!-- Mobile Bottom Nav -->
+    <nav id="mobile-nav" class="mobile-bottom-nav">
+      <button class="mobile-nav-btn active" data-target="tab-today">
+        <span class="mobile-nav-icon">⚽</span>
+        <span class="mobile-nav-label">Today</span>
+      </button>
+      <button class="mobile-nav-btn" data-target="tab-schedule">
+        <span class="mobile-nav-icon">📅</span>
+        <span class="mobile-nav-label">Schedule</span>
+      </button>
+      <button class="mobile-nav-btn" data-target="tab-groups">
+        <span class="mobile-nav-icon">🏆</span>
+        <span class="mobile-nav-label">Groups</span>
+      </button>
+      <button class="mobile-nav-btn" data-target="tab-standings">
+        <span class="mobile-nav-icon">📊</span>
+        <span class="mobile-nav-label">Standings</span>
+      </button>
+    </nav>
 
     <script type="module" src="/src/main.js"></script>
   </body>

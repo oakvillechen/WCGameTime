@@ -1,4 +1,5 @@
 import { teams } from '../data/teams.js';
+import { t, getLang } from '../i18n.js';
 
 export function openTeamModal(teamId) {
   const team = teams[teamId];
@@ -12,29 +13,29 @@ export function openTeamModal(teamId) {
       <div class="flag">${team.flag}</div>
       <div>
         <h2 style="font-family: var(--font-head); color: var(--accent-gold); font-size: 2rem;">${team.name}</h2>
-        <p style="color: var(--text-primary); font-weight: bold;">Confederation: ${team.confed} | Group ${team.group}</p>
+        <p style="color: var(--text-primary); font-weight: bold;">${t('modal.confederation')}: ${team.confed} | ${t('modal.group')} ${team.group}</p>
         <div id="country-info" style="min-height: 20px;">
-          <small style="color: var(--text-secondary)">Loading country info...</small>
+          <small style="color: var(--text-secondary)">${t('modal.loadingCountry')}</small>
         </div>
       </div>
     </div>
     
-    <h3 style="margin-bottom: 1rem; border-bottom: 1px solid var(--glass-border); padding-bottom: 0.5rem;">26-Man Squad</h3>
+    <h3 style="margin-bottom: 1rem; border-bottom: 1px solid var(--glass-border); padding-bottom: 0.5rem;">${t('modal.squad')}</h3>
     
     <div style="overflow-x: auto;">
       <table class="teams-table" style="font-size: 0.9rem;">
         <thead>
           <tr>
-            <th>Pic</th>
-            <th>No.</th>
-            <th>Name</th>
-            <th>Pos</th>
-            <th>Club</th>
-            <th>Age</th>
-            <th>Birth Yr</th>
-            <th>Height</th>
-            <th>Goals</th>
-            <th>Info</th>
+            <th>${t('modal.pic')}</th>
+            <th>${t('modal.no')}</th>
+            <th>${t('modal.name')}</th>
+            <th>${t('modal.pos')}</th>
+            <th>${t('modal.club')}</th>
+            <th>${t('modal.age')}</th>
+            <th>${t('modal.birthYear')}</th>
+            <th>${t('modal.height')}</th>
+            <th>${t('modal.goals')}</th>
+            <th>${t('modal.info')}</th>
           </tr>
         </thead>
         <tbody>
@@ -55,28 +56,31 @@ export function openTeamModal(teamId) {
               <td>${player.height || '-'}</td>
               <td>${player.goals !== undefined ? player.goals : '-'}</td>
               <td>
-                <a href="https://www.google.com/search?q=${encodeURIComponent(player.name + ' football player stats')}" target="_blank" style="text-decoration: none; background: var(--accent-color); color: white; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.8rem;">Search</a>
+                <a href="https://www.google.com/search?q=${encodeURIComponent(player.name + ' football player stats')}" target="_blank" style="text-decoration: none; background: var(--accent-color); color: white; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.8rem;">${t('modal.search')}</a>
               </td>
             </tr>
           `).join('')}
         </tbody>
       </table>
     </div>
-    ${team.roster.length < 26 ? `<div style="text-align: center; color: var(--text-secondary); margin-top: 1rem; font-size: 0.8rem;">* Partial roster shown for demo</div>` : ''}
+    ${team.roster.length < 26 ? `<div style="text-align: center; color: var(--text-secondary); margin-top: 1rem; font-size: 0.8rem;">${t('modal.partialRoster')}</div>` : ''}
   `;
 
   modal.classList.add('active');
 
   // Fetch country data asynchronously from Wikipedia
   const countryInfoDiv = document.getElementById('country-info');
-  
+  const lang = getLang();
+
   let searchQuery = team.name;
   if (team.id === 'USA') searchQuery = 'United States';
   if (team.id === 'ENG') searchQuery = 'England';
   if (team.id === 'KOR') searchQuery = 'South Korea';
   if (team.id === 'CZE') searchQuery = 'Czech Republic';
-  
-  fetch(`https://en.wikipedia.org/w/api.php?action=query&prop=extracts&exsentences=2&exlimit=1&titles=${encodeURIComponent(searchQuery)}&explaintext=1&formatversion=2&format=json&origin=*`)
+
+  // Use Chinese or English Wikipedia
+  const wikiLang = lang === 'zh' ? 'zh' : 'en';
+  fetch(`https://${wikiLang}.wikipedia.org/w/api.php?action=query&prop=extracts&exsentences=2&exlimit=1&titles=${encodeURIComponent(searchQuery)}&explaintext=1&formatversion=2&format=json&origin=*`)
     .then(res => res.json())
     .then(data => {
       if (data && data.query && data.query.pages && data.query.pages[0] && data.query.pages[0].extract) {
@@ -86,11 +90,11 @@ export function openTeamModal(teamId) {
           </div>
         `;
       } else {
-        countryInfoDiv.innerHTML = `<small style="color: var(--text-secondary)">No country information found.</small>`;
+        countryInfoDiv.innerHTML = `<small style="color: var(--text-secondary)">${t('modal.noCountryInfo')}</small>`;
       }
     })
     .catch(err => {
-      countryInfoDiv.innerHTML = `<small style="color: var(--accent-red)">Error loading country info.</small>`;
+      countryInfoDiv.innerHTML = `<small style="color: var(--accent-red)">${t('modal.errorCountryInfo')}</small>`;
     });
 
   // Dynamically fetch player headshots from Wikipedia

@@ -3,6 +3,7 @@ import { teams } from '../data/teams.js';
 import { venues } from '../data/venues.js';
 import { fetchTodayMatches, invalidateCache } from '../data/api.js';
 import { openTeamModal } from '../components/teamModal.js';
+import { t, getLang } from '../i18n.js';
 
 let refreshInterval = null;
 
@@ -19,7 +20,7 @@ export function renderTodayTab() {
 
   // Show loading state only if there are no matches already rendered
   if (!container.querySelector('.match-card')) {
-    container.innerHTML = `<div class="glass-panel" style="padding: 2rem; text-align: center;"><h3>⏳ Loading today's matches...</h3></div>`;
+    container.innerHTML = `<div class="glass-panel" style="padding: 2rem; text-align: center;"><h3>${t('today.loading')}</h3></div>`;
   }
 
   // Fetch and render
@@ -36,19 +37,22 @@ export function renderTodayTab() {
 async function renderMatchesAsync(container) {
   const { matches: todaysMatches, error } = await fetchTodayMatches();
 
-  const timeString = new Intl.DateTimeFormat('en-US', { timeStyle: 'medium', timeZone: 'America/Toronto' }).format(new Date());
+  const lang = getLang();
+  const dateLocale = lang === 'zh' ? 'zh-CN' : 'en-US';
+
+  const timeString = new Intl.DateTimeFormat(dateLocale, { timeStyle: 'medium', timeZone: 'America/Toronto' }).format(new Date());
 
   if (error) {
-    container.innerHTML = `<div class="glass-panel" style="padding: 2rem; text-align: center;"><h3>⚠️ Could not fetch match data</h3><p style="color: var(--text-secondary);">${error}</p></div>`;
+    container.innerHTML = `<div class="glass-panel" style="padding: 2rem; text-align: center;"><h3>${t('today.error')}</h3><p style="color: var(--text-secondary);">${error}</p></div>`;
     return;
   }
 
   if (todaysMatches.length === 0) {
-    container.innerHTML = `<div class="glass-panel" style="padding: 2rem; text-align: center;"><h3>No matches scheduled for today.</h3><p style="color: var(--text-secondary);">🍁 Toronto Time: ${timeString}</p></div>`;
+    container.innerHTML = `<div class="glass-panel" style="padding: 2rem; text-align: center;"><h3>${t('today.noMatches')}</h3><p style="color: var(--text-secondary);">🍁 ${t('today.torontoTime')}: ${timeString}</p></div>`;
     return;
   }
 
-  let html = `<div id="today-status" style="margin-bottom: 1rem; font-size: 0.9rem; color: var(--text-secondary);">🍁 Toronto Time: ${timeString} | <span style="color: var(--accent-gold);">✓ Live data from worldcup26.ir</span></div><div class="match-grid">`;
+  let html = `<div id="today-status" style="margin-bottom: 1rem; font-size: 0.9rem; color: var(--text-secondary);">🍁 ${t('today.torontoTime')}: ${timeString} | <span style="color: var(--accent-gold);">${t('today.liveData')}</span></div><div class="match-grid">`;
 
   todaysMatches.forEach(match => {
     const homeTeam = teams[match.home];
@@ -63,14 +67,14 @@ async function renderMatchesAsync(container) {
     // Time formatting
     const matchDateObj = new Date(match.date);
     const now = new Date();
-    const localTime = new Intl.DateTimeFormat('en-US', {
+    const localTime = new Intl.DateTimeFormat(dateLocale, {
       hour: 'numeric',
       minute: '2-digit',
       timeZone: 'America/Toronto',
       timeZoneName: 'short'
     }).format(matchDateObj);
 
-    const venueTime = venue ? new Intl.DateTimeFormat('en-US', {
+    const venueTime = venue ? new Intl.DateTimeFormat(dateLocale, {
       hour: 'numeric',
       minute: '2-digit',
       timeZone: venue.timezone,
@@ -81,9 +85,9 @@ async function renderMatchesAsync(container) {
     let statusBadge;
     if (match.status === 'live') {
       const minuteDisplay = match.liveMinute || '';
-      statusBadge = `<span class="live-badge">🔴 LIVE ${minuteDisplay}</span>`;
+      statusBadge = `<span class="live-badge">🔴 ${t('today.live')} ${minuteDisplay}</span>`;
     } else if (match.status === 'finished' && match.score) {
-      statusBadge = `<span class="live-badge" style="background: var(--text-secondary)">FT</span>`;
+      statusBadge = `<span class="live-badge" style="background: var(--text-secondary)">${t('today.ft')}</span>`;
     } else {
       // upcoming — show countdown
       const diffMs = matchDateObj.getTime() - now.getTime();
@@ -91,7 +95,7 @@ async function renderMatchesAsync(container) {
         const diffH = Math.floor(diffMs / 3600000);
         const diffM = Math.floor((diffMs % 3600000) / 60000);
         const countdownText = diffH > 0 ? `${diffH}h ${diffM}m` : `${diffM}m`;
-        statusBadge = `<span>⏱ Kickoff in ${countdownText} • ${localTime}</span>`;
+        statusBadge = `<span>⏱ ${t('today.kickoffIn')} ${countdownText} • ${localTime}</span>`;
       } else {
         statusBadge = `<span style="color: var(--text-secondary);">${localTime}</span>`;
       }
@@ -102,7 +106,7 @@ async function renderMatchesAsync(container) {
     if (match.score && (match.status === 'finished' || match.status === 'live')) {
       scoreDisplay = `<span>${match.score.home}</span><span>-</span><span>${match.score.away}</span>`;
     } else if (match.status === 'live') {
-      scoreDisplay = `<span style="font-size: 1.2rem; color: var(--accent-red); animation: pulse 1.5s infinite;">Match in progress</span>`;
+      scoreDisplay = `<span style="font-size: 1.2rem; color: var(--accent-red); animation: pulse 1.5s infinite;">${t('today.live')}</span>`;
     } else {
       scoreDisplay = `<span style="font-size: 1.5rem; color: var(--text-secondary)">vs</span>`;
     }
@@ -112,7 +116,6 @@ async function renderMatchesAsync(container) {
     if (match.homeScorers || match.awayScorers) {
       const parseScorers = (raw) => {
         if (!raw || raw === 'null') return [];
-        // Remove outer braces and split by comma, clean up quotes
         return raw.replace(/^\{|\}$/g, '').split(',')
           .map(s => s.replace(/^[""\s]+|[""\s]+$/g, '').trim())
           .filter(s => s.length > 0);
@@ -131,7 +134,7 @@ async function renderMatchesAsync(container) {
     html += `
       <div class="match-card glass-panel" id="match-${match.id}">
         <div class="match-header">
-          <span>Match ${match.id} • ${match.stage} • Group ${match.group}</span>
+          <span>${t('today.match')} ${match.id} • ${match.stage} • ${t('today.group')} ${match.group}</span>
           ${statusBadge}
         </div>
         
@@ -156,7 +159,7 @@ async function renderMatchesAsync(container) {
           <a href="https://www.google.com/search?q=${encodeURIComponent(homeTeam.name + ' vs ' + awayTeam.name + ' World Cup 2026 score')}" 
              target="_blank" 
              style="display: inline-block; padding: 0.5rem 1rem; background: var(--text-primary); color: var(--bg-color); text-decoration: none; border-radius: 8px; font-weight: bold; margin-bottom: 1rem; font-size: 0.9rem;">
-             🔍 View Live on Google
+             ${t('today.viewLiveGoogle')}
           </a>
         </div>
 
@@ -164,7 +167,7 @@ async function renderMatchesAsync(container) {
         <div style="margin-top: 1rem; border-top: 1px solid var(--glass-border); padding-top: 1rem;">
           <div class="venue-info">
             <strong>${venue.name}</strong>
-            ${venue.city}, ${venue.country} • Kickoff: ${venueTime} (Venue Time)
+            ${venue.city}, ${venue.country} • ${t('today.kickoff')}: ${venueTime} (${t('today.venueTime')})
           </div>
           
           <p style="font-size: 0.85rem; color: var(--text-secondary); margin: 0.75rem 0; line-height: 1.4;">
@@ -174,7 +177,7 @@ async function renderMatchesAsync(container) {
           <div id="map-${match.id}" class="map-container"></div>
           <button class="open-map-btn" data-match-id="${match.id}" data-venue-key="${match.venue}"
             style="display: inline-flex; align-items: center; gap: 0.4rem; margin-top: 0.75rem; padding: 0.5rem 1rem; background: rgba(255,255,255,0.08); border: 1px solid var(--glass-border); color: var(--text-primary); border-radius: 8px; cursor: pointer; font-family: var(--font-main); font-size: 0.85rem; font-weight: 600; transition: all 0.2s ease;">
-            🗺️ Open Map in New Window
+            ${t('today.openMap')}
           </button>
         </div>
         ` : ''}

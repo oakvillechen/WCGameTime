@@ -1,12 +1,13 @@
 import { teams } from '../data/teams.js';
 import { fetchMatches } from '../data/api.js';
 import { openTeamModal } from '../components/teamModal.js';
+import { t } from '../i18n.js';
 
 export function renderTeamsTab() {
-  const container = document.getElementById('tab-teams');
+  const container = document.getElementById('tab-standings');
   // Show loading state only if no table is already rendered
   if (!container.querySelector('.teams-table')) {
-    container.innerHTML = `<div class="glass-panel" style="padding: 2rem; text-align: center;"><h3>⏳ Loading standings...</h3></div>`;
+    container.innerHTML = `<div class="glass-panel" style="padding: 2rem; text-align: center;"><h3>${t('standings.loading')}</h3></div>`;
   }
   renderTeamsAsync(container);
 }
@@ -70,9 +71,9 @@ async function renderTeamsAsync(container) {
   });
 
   let html = `
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
-      <h2 style="font-family: var(--font-head); font-size: 2.5rem; color: var(--accent-gold);">Teams & Standings</h2>
-      <p style="color: var(--text-secondary)">Overall rankings across all groups</p>
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; flex-wrap: wrap; gap: 0.5rem;">
+      <h2 style="font-family: var(--font-head); font-size: 2.5rem; color: var(--accent-gold);">${t('standings.title')}</h2>
+      <p style="color: var(--text-secondary)">${t('standings.subtitle')}</p>
     </div>
     
     <div class="glass-panel" style="overflow-x: auto;">
@@ -80,17 +81,17 @@ async function renderTeamsAsync(container) {
         <thead>
           <tr>
             <th style="width: 50px;">#</th>
-            <th>Team</th>
-            <th>Confed</th>
-            <th>Group</th>
-            <th>P</th>
-            <th>W</th>
-            <th>D</th>
-            <th>L</th>
-            <th>GF</th>
-            <th>GA</th>
-            <th>GD</th>
-            <th>Pts</th>
+            <th>${t('table.team')}</th>
+            <th>${t('table.confed')}</th>
+            <th>${t('table.group')}</th>
+            <th>${t('table.p')}</th>
+            <th>${t('table.w')}</th>
+            <th>${t('table.d')}</th>
+            <th>${t('table.l')}</th>
+            <th>${t('table.gf')}</th>
+            <th>${t('table.ga')}</th>
+            <th>${t('table.gd')}</th>
+            <th>${t('table.pts')}</th>
           </tr>
         </thead>
         <tbody>
